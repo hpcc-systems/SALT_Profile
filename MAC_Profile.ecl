@@ -14,5 +14,19 @@
  *   SALT_Profile.MAC_Profile(my_dataset,maxFieldCorr:=75);
  */
 EXPORT MAC_Profile(inFile,id_field='',src_field='',CorrelateSampleSize=100000000,out_prefix='',maxFieldCorr=50) := MACRO
-  SALT_Profile.MOD_Profile(inFile,id_field,src_field,CorrelateSampleSize,out_prefix,maxFieldCorr).out;
+  profile_mod := SALT_Profile.MOD_Profile(inFile,id_field,src_field,CorrelateSampleSize,out_prefix,maxFieldCorr);
+  // Execute the output actions
+  profile_mod.out;
+
+  /*
+  Several exported attributes are also available, corresponding with the workunit results created by profile_mod.out:
+
+  profile_mod.Summary
+  profile_mod.invSummary
+  profile_mod.AllProfiles
+  profile_mod.optLayout
+  profile_mod.Types
+
+  You can reference the above attributes in your calling code after you have called MAC_Profile().
+  */
 ENDMACRO;

@@ -1,3 +1,4 @@
+IMPORT SALT_Profile;
 EXPORT MAC_Correlate := MODULE
   SHARED MaxExamples := 300;
   SHARED MaxRel := 100;
@@ -9,7 +10,7 @@ EXPORT MAC_Correlate := MODULE
     UNSIGNED2 FldNo2;
   END;
 	
-  SHARED Field_Identification := MAC_Character_Counts.Field_Identification;
+  SHARED Field_Identification := SALT_Profile.MAC_Character_Counts.Field_Identification;
   SHARED Cor := RECORD
     UNSIGNED2 FldNo;
     SALT_Profile.StrType FieldName;

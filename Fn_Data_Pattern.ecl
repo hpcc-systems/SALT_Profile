@@ -1,4 +1,7 @@
-EXPORT Fn_Data_Pattern(StrType s) := #IF (UnicodeCfg.UseUnicode)
+IMPORT SALT_Profile;
+IMPORT lib_stringlib;
+
+EXPORT Fn_Data_Pattern(SALT_Profile.StrType s) := #IF (SALT_Profile.UnicodeCfg.UseUnicode)
   unicodelib.unicodesubstituteout(
     unicodelib.unicodesubstituteout(
       unicodelib.unicodesubstituteout(s,U'ABCDEFGHIJKLMNOPQRSTUVWXYZ',U'A'),

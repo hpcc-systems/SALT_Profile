@@ -1,3 +1,4 @@
+IMPORT SALT_Profile;
 EXPORT MAC_Character_Counts := MODULE
   SHARED MaxExamples := 300;
   SHARED MaxChars := 256; // Change to allow more than 256 different characters in string
@@ -76,7 +77,7 @@ EXPORT MAC_Character_Counts := MODULE
     Len2Size(UNSIGNED2 c) := MAP ( c < 3 => 1, c < 5 => 2, c < 7 => 3, c < 9 => 4, c < 11 => 5, c < 14 => 6, c < 16 => 7, 8 );
     boiler := DATASET([{0,RName+' := RECORD'},{100000,'  END;'}],r1);
     r1 WriteEcl(t le) := TRANSFORM
-      #IF (UnicodeCfg.UseUnicode)
+      #IF (SALT_Profile.UnicodeCfg.UseUnicode)
         SELF.Txt := '  '+MAP( ~le.AllNum => 'UNICODE' + IF(le.MaxLen<MaxFixedLen,(SALT_Profile.StrType)le.MaxLen, ''),
       #ELSE
         SELF.Txt := '  '+MAP( ~le.AllNum => 'STRING' + IF(le.MaxLen<MaxFixedLen,(SALT_Profile.StrType)le.MaxLen, ''),
