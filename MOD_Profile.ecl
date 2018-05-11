@@ -142,13 +142,30 @@ EXPORT MOD_Profile(inFile_raw,id_field='',src_field='',CorrelateSampleSize=10000
 
     // Field Correlations
     SHARED okCorrelations := (%fieldCount% <= maxFieldCorr); // This section blows up for extreme #s of fields
-    SALT_Profile.MAC_Correlate.Data_Layout IntoP(inFile le, UNSIGNED C) := TRANSFORM
-      SELF.FldNo1 := 1 + (C / %fieldCount%);
-      SELF.FldNo2 := 1 + (C % %fieldCount%);
+    fieldNumDS := DATASET(%fieldCount%, TRANSFORM({UNSIGNED2 fieldNum}, SELF.fieldNum := COUNTER));
+    fieldPairs := JOIN
+        (
+            fieldNumDS,
+            fieldNumDS,
+            LEFT.fieldNum < RIGHT.fieldNum,
+            TRANSFORM
+                (
+                    {
+                        UNSIGNED2   FldNo1,
+                        UNSIGNED2   FldNo2
+                    },
+                    SELF.FldNo1 := LEFT.fieldNum,
+                    SELF.FldNo2 := RIGHT.fieldNum
+                ),
+            ALL
+        );
+    SALT_Profile.MAC_Correlate.Data_Layout IntoP(inFile le, UNSIGNED2 f1, UNSIGNED2 f2) := TRANSFORM
+      SELF.FldNo1 := f1;
+      SELF.FldNo2 := f2;
       SELF.Fld1 := TRIM(CHOOSE(SELF.FldNo1,%transformClauses%));
       SELF.Fld2 := TRIM(CHOOSE(SELF.FldNo2,%transformClauses%));
       END;
-    Pairs0 := NORMALIZE(ENTH(inFile,CorrelateSampleSize),%fieldCount%*%fieldCount%,IntoP(LEFT,COUNTER))(FldNo1<FldNo2);
+    Pairs0 := JOIN(ENTH(inFile,CorrelateSampleSize), fieldPairs, TRUE, IntoP(LEFT, RIGHT.FldNo1, RIGHT.FldNo2), ALL);
     Pairs00 := IF(okCorrelations, Pairs0, DATASET([],SALT_Profile.MAC_Correlate.Data_Layout));
     EXPORT Correlations := SALT_Profile.MAC_Correlate.Fn_Profile(Pairs00,FldIds);
     EXPORT out_Correlations := IF(okCorrelations,
